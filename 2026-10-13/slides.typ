@@ -9,12 +9,15 @@
   header: none,
   header-right: none,
   footer: none,
-  footer-right: context [#counter(page).display() / #counter(page).final().first()],
+  footer-right: context [#text(
+    size: page-number-size,
+    fill: page-number-fill,
+  )[#counter(page).display() / #counter(page).final().first()]],
   subslide-preamble: none,
-  config-page(width: 960pt, height: 540pt, margin: 36pt, fill: cream),
+  config-page(width: 960pt, height: 540pt, margin: slide-margin, fill: cream),
 )
 
-#show: apply-theme
+#show: apply-theme.with(text-size: 14pt, math-size: 20pt)
 
 #slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
@@ -59,6 +62,8 @@
   ],
   [
     - This study compares two categories of modeling: longitudinal and cross-sectional. We predict the clinical diagnosis of cognitive impairment in Alzheimer's disease (CN, MCI, or AD).
+
+    - hola!
   ],
 )
 
