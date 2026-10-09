@@ -67,9 +67,11 @@
   ],
 )
 
+#section-slide("AD Progression Prediction using fMRI")
+
 #slide[
-  #slide-title[GraphSAGE]
-  #text(16pt, fill: olive, font: "Libertinus Serif")[[NeurIPS 2017]]
+  #slide-title("GraphSAGE", venue: "[NeurIPS 2017]")
+  // #text(16pt, fill: olive, font: "Libertinus Serif")[[NeurIPS 2017]]
   #v(10pt)
   #grid(
     columns: (1.65fr, 1fr),
@@ -113,10 +115,7 @@
 #slide[
   #slide-title[Testing]
 
-  // - hello
-  //   - dawdh
-  // - dawdj
-  // #section-title("hello")
+  - hello
+    - dawdh
+  - dawdj
 ]
-
-#section-slide("New Section")

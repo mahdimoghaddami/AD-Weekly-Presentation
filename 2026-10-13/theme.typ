@@ -3,25 +3,33 @@
 
 #let olive = rgb("646f3c")
 #let cream = rgb("fffbe7")
+#let orange = rgb("b05024")
 #let ink = rgb("#000000")
 #let ink2 = rgb("25291d")
-#let orange = rgb("b05024")
 #let slide-margin = 36pt
 #let page-number-size = 8pt
 #let page-number-fill = orange
 #let heading-font = "Libertinus Serif"
 #let body-font = "Inter"
+#let body-font-size = 14pt
 #let math-font = "New Computer Modern Math"
+#let math-font-size = 20pt
 
-#let apply-theme(entire-document, text-size: 14pt, math-size: 20pt) = {
+#let apply-theme(entire-document, text-size: body-font-size, math-size: math-font-size) = {
   set text(font: body-font, size: text-size, fill: ink)
   show math.equation: set text(font: math-font, size: math-size)
   entire-document
 }
 
-#let slide-title(title-string, color: olive, font-size: 38pt) = {
+#let slide-title(title-string, color: olive, font-size: 38pt, venue: none) = {
   // text(font: "Libertinus Serif", size: 38pt, fill: olive, title-string)
-  heading(level: 2)[#text(font: heading-font, weight: "bold", size: font-size, fill: color, title-string)]
+  heading(level: 2)[#text(font: heading-font, weight: "bold", size: font-size, fill: color, title-string) #text(
+      font: heading-font,
+      weight: "regular",
+      size: 16pt,
+      fill: color,
+      venue,
+    )]
 }
 
 #let section-slide(section-title-string, color: cream, font-size: 72pt) = {
