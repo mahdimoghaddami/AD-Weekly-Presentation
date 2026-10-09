@@ -16,18 +16,16 @@
 
 #show: apply-theme
 
-
 #slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
   #set par(leading: 0.4em)
   #align(right)[#text(12pt)[#datetime.today().display("[month repr:long] [day], [year]")]]
-  // #v(26pt)
   #align(horizon)[#grid(
     columns: (1fr, 1fr),
-    [#text(font: "Libertinus Serif", size: 80pt)[Alzheimer's\ Disease\ Research]],
-    [#image("assets/cover.png", width: 100%, height: 285pt, fit: "contain")],
+    [#text(font: "Libertinus Serif", size: 85pt)[Alzheimer's\ Disease\ Research]],
+    [#image("assets/cover.png", width: 100%, height: 250pt, fit: "contain")],
   )]
-
+  #v(20pt)
   #align(bottom)[Mahdi Moghaddami]
   #v(-8pt)
   #line(length: 100%, stroke: 0.6pt + cream)
@@ -40,6 +38,29 @@
 //     indent: 1em,
 //   )
 // ]
+
+#section-slide("Projects Overview")
+
+#split-slide(
+  40%,
+  [#slide-title([Longitudinal\ vs.\ Cross-Sectional], color: cream)
+    #align(bottom)[
+      - Longitudinal Models:
+        - RNN
+        - LSTM
+        - GRU
+        - MinimalRNN
+
+      - Cross-Sectional Models:
+        - Random Forest
+        - Support Vector Machine
+        - Logistic Regression
+    ]
+  ],
+  [
+    - This study compares two categories of modeling: longitudinal and cross-sectional. We predict the clinical diagnosis of cognitive impairment in Alzheimer's disease (CN, MCI, or AD).
+  ],
+)
 
 #slide[
   #slide-title[GraphSAGE]

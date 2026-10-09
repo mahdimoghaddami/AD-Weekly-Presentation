@@ -14,9 +14,9 @@
   entire-document
 }
 
-#let slide-title(title-string) = {
+#let slide-title(title-string, color: olive) = {
   // text(font: "Libertinus Serif", size: 38pt, fill: olive, title-string)
-  heading(level: 2)[#text(font: "Libertinus Serif", weight: "bold", size: 38pt, fill: olive, title-string)]
+  heading(level: 2)[#text(font: "Libertinus Serif", weight: "bold", size: 38pt, fill: color, title-string)]
 }
 
 #let section-slide(section-title-string) = {
@@ -29,3 +29,27 @@
     section-title-string,
   )])]
 }
+
+#let split-slide(left_percentage, left-body, right-body) = slide(config: config-page(margin: 0pt))[
+  #grid(
+    columns: (left_percentage, auto),
+    block(
+      width: 100%,
+      height: 100%,
+      fill: olive,
+      inset: 36pt,
+    )[
+      #set text(fill: cream)
+      #left-body
+    ],
+    block(
+      width: 100%,
+      height: 100%,
+      fill: cream,
+      inset: 36pt,
+    )[
+      #set text(fill: ink)
+      #right-body
+    ],
+  )
+]
