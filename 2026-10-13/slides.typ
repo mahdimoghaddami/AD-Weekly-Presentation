@@ -9,7 +9,7 @@
   header: none,
   header-right: none,
   footer: none,
-  footer-right: none,
+  footer-right: context [#counter(page).display() / #counter(page).final().first()],
   subslide-preamble: none,
   config-page(width: 960pt, height: 540pt, margin: 36pt, fill: cream),
 )
@@ -17,32 +17,33 @@
 #show: apply-theme
 
 
-#slide(config: config-page(fill: olive))[
+#slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
+  #set par(leading: 0.4em)
   #align(right)[#text(12pt)[#datetime.today().display("[month repr:long] [day], [year]")]]
-  #v(26pt)
-  #grid(
-    columns: (1.4fr, 1fr),
-    gutter: 24pt,
-    [#text(font: "Libertinus Serif", size: 66pt)[Alzheimer's\ Disease\ Research]],
+  // #v(26pt)
+  #align(horizon)[#grid(
+    columns: (1fr, 1fr),
+    [#text(font: "Libertinus Serif", size: 80pt)[Alzheimer's\ Disease\ Research]],
     [#image("assets/cover.png", width: 100%, height: 285pt, fit: "contain")],
-  )
-  #v(60pt)
-  // #grid(
-  //   columns: (1fr, 1fr),
-  //   gutter: 38pt,
-  //   [#text(20pt)[Mahdi Moghaddami] #v(9pt) #line(length: 100%, stroke: 0.6pt + cream)],
-  //   [#text(20pt)[Brett Piggott] #v(9pt) #line(length: 100%, stroke: 0.6pt + cream)],
-  // )
+  )]
+
   #align(bottom)[Mahdi Moghaddami]
   #v(-8pt)
-  #line(length: 15.8%, stroke: 0.6pt + cream)
+  #line(length: 100%, stroke: 0.6pt + cream)
 ]
 
+// #slide[
+//   #outline(
+//     depth: 2,
+//     title: text("Contents", fill: olive, font: "Libertinus Serif"),
+//     indent: 1em,
+//   )
+// ]
+
 #slide[
-  #title[GraphSAGE]
-  // #linebreak()
-  #text(16pt, fill: olive)[[NeurIPS 2017]]
+  #slide-title[GraphSAGE]
+  #text(16pt, fill: olive, font: "Libertinus Serif")[[NeurIPS 2017]]
   #v(10pt)
   #grid(
     columns: (1.65fr, 1fr),
@@ -75,10 +76,21 @@
 ]
 
 #slide[
-  #title[The Model]
+  #slide-title[The Model]
   #v(6pt)
-  #text(21pt)[Functional connectivity graphs across a subject's visits]
+  Functional connectivity graphs across a subject's visits
   #v(10pt)
   #image("assets/model_1row_block.png", width: 100%, height: 180pt, fit: "contain")
   #v(5pt)
 ]
+
+#slide[
+  #slide-title[Testing]
+
+  // - hello
+  //   - dawdh
+  // - dawdj
+  // #section-title("hello")
+]
+
+#section-slide("New Section")
