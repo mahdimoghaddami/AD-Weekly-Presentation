@@ -1,5 +1,5 @@
 // Three-slide sample based on source PDF pages 1, 14, and 12.
-#import "@preview/touying:0.8.0": *
+#import "@preview/touying:0.8.0": config-page, slide, themes
 #import themes.simple: simple-theme, slide
 #import "theme.typ": *
 
@@ -22,7 +22,7 @@
 #slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
   #set par(leading: 0.4em)
-  #align(right)[#text(12pt)[#datetime.today().display("[month repr:long] [day], [year]")]]
+  #align(right)[#text(10pt)[#datetime.today().display("[month repr:long] [day], [year]")]]
   #align(horizon)[#grid(
     columns: (1fr, 1fr),
     [#text(font: "Libertinus Serif", size: 85pt)[Alzheimer's\ Disease\ Research]],

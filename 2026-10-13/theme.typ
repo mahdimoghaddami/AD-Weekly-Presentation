@@ -1,5 +1,4 @@
 #import "@preview/touying:0.8.0": config-page, themes
-
 #import themes.simple: simple-theme, slide
 
 #let olive = rgb("646f3c")
@@ -10,22 +9,25 @@
 #let slide-margin = 36pt
 #let page-number-size = 8pt
 #let page-number-fill = orange
+#let heading-font = "Libertinus Serif"
+#let body-font = "Inter"
+#let math-font = "New Computer Modern Math"
 
 #let apply-theme(entire-document, text-size: 14pt, math-size: 20pt) = {
-  set text(font: "Inter", size: text-size, fill: ink)
-  show math.equation: set text(font: "New Computer Modern Math", size: math-size)
+  set text(font: body-font, size: text-size, fill: ink)
+  show math.equation: set text(font: math-font, size: math-size)
   entire-document
 }
 
 #let slide-title(title-string, color: olive, font-size: 38pt) = {
   // text(font: "Libertinus Serif", size: 38pt, fill: olive, title-string)
-  heading(level: 2)[#text(font: "Libertinus Serif", weight: "bold", size: font-size, fill: color, title-string)]
+  heading(level: 2)[#text(font: heading-font, weight: "bold", size: font-size, fill: color, title-string)]
 }
 
 #let section-slide(section-title-string, color: cream, font-size: 72pt) = {
   set par(leading: 0.4em)
   slide(config: config-page(fill: orange, footer: none))[#align(horizon, heading()[#text(
-    font: "Libertinus Serif",
+    font: heading-font,
     weight: "regular",
     size: font-size,
     fill: color,
