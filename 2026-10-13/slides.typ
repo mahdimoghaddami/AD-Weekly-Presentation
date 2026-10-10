@@ -5,7 +5,7 @@
 
 #show: simple-theme.with(
   aspect-ratio: "16-9",
-  primary: olive,
+  primary: ink,
   header: none,
   header-right: none,
   footer: none,
@@ -67,7 +67,104 @@
   ],
 )
 
+#split-slide(
+  40%,
+  [#slide-title([Review Article], color: cream)
+    #align(bottom)[
+      - Two major questions:
+        1. How is longitudinal data used for AD?
+        2. How should we write articles when there is an abundance of papers?
+          - ASReview
+          - Elicit
+          - Covidence
+          - DistillerSR
+          - Nested-Knowledge
+    ]
+  ],
+  [
+    - 2020-2026 papers
+
+    - Four Sources:
+      1. ACM Digital Library
+      2. IEEEXplore
+      3. Scopus
+      4. PubMed
+
+    - We filter papers based on the existence of certain keywords in the title and abstract
+
+    - We find relevant papers.
+
+    - We need further ranking of paper. We add different metric for papers:
+      - Journal papers:
+        - Journal Impact Factor (JIF)
+        - CiteScore
+        - SCImage Journal Rank (SJR)
+        - Source Normalized Impact per Paper (SNIP)
+      - Conference papers:
+        - Core Ranking (A, A, B, C)
+        - CCF Ranking (A, B, C)
+      - Both:
+        - Google Scholar h5-index
+  ],
+)
+
+#split-slide(
+  40%,
+  [#slide-title([Longitudinal\ vs.\ Cross-Sectional], color: cream)
+    #align(bottom)[
+      - The question:
+        - Will a subject progress to a further stage of AD (CN -> MCI or MCI -> AD) in the next visit?
+
+      - Binary Stable/Converter prediction.
+    ]
+  ],
+  [
+    - 337 subjects
+
+    - The data:
+      - DTI
+      - Structured clinical and biomarker data (TADPOLE)
+
+    - Brett will talk more about this project!
+  ],
+)
+
 #section-slide("AD Progression Prediction using fMRI")
+
+#slide[
+  #slide-title("What is fMRI?")
+  #v(slide-margin)
+  #grid(
+    columns: (30%, auto),
+    gutter: slide-margin,
+    [
+      - Functional Magnetic Resonance Imaging is a type of brain scan that shows both the structure of the brain and, more importantly, *which areas are active during specific tasks or at rest*.
+
+      - It's acquired by tracking blood flow changes. When a brain area is more active, it uses more oxygen, and fMRI can detect that via something called the *BOLD signal* (Blood Oxygen Level Dependent signal).
+
+      - Each voxel contains a BOLD signal that changes over time.
+
+      - It's basically *a number of 3D images*.
+    ],
+    [
+      #figure(image("assets/data_classes.png"), caption: "Example fMRI volume", gap: 1em)
+    ],
+  )
+]
+
+#slide[
+  #slide-title("Preprocessing Steps using fMRIPrep")
+  #v(slide-margin)
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      1. Convert the data into a standard format:
+        - DICOM (.dcm) -> NIfTI (.nii)
+    ],
+    [hello],
+  )
+]
 
 #slide[
   #slide-title("GraphSAGE", venue: "[NeurIPS 2017]")

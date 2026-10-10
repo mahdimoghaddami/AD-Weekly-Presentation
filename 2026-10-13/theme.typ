@@ -43,7 +43,15 @@
   )])]
 }
 
-#let split-slide(left_percentage, left-body, right-body) = slide(
+#let split-slide(
+  left_percentage,
+  left-body,
+  right-body,
+  left-color-bg: olive,
+  right-color-bg: cream,
+  left-color-txt: cream,
+  right-color-txt: ink,
+) = slide(
   config: config-page(margin: 0pt, footer: context place(bottom + right, dx: -slide-margin, dy: -20pt)[#text(
     size: page-number-size,
     fill: page-number-fill,
@@ -54,10 +62,10 @@
     block(
       width: 100%,
       height: 100%,
-      fill: olive,
+      fill: left-color-bg,
       inset: slide-margin,
     )[
-      #set text(fill: cream)
+      #set text(fill: left-color-txt)
       #left-body
     ],
     block(
@@ -66,7 +74,7 @@
       fill: cream,
       inset: slide-margin,
     )[
-      #set text(fill: ink)
+      #set text(fill: right-color-txt)
       #right-body
     ],
   )
