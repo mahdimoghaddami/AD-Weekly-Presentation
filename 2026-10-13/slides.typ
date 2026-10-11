@@ -14,7 +14,7 @@
     fill: page-number-fill,
   )[#counter(page).display() / #counter(page).final().first()]],
   subslide-preamble: none,
-  config-page(width: 960pt, height: 540pt, margin: slide-margin, fill: cream),
+  config-page(width: 960pt, height: 540pt, margin: (bottom: slide-margin, rest: slide-margin), fill: cream),
 )
 
 #show: apply-theme.with(text-size: 14pt, math-size: 19pt)
@@ -63,7 +63,7 @@
   [
     - This study compares two categories of modeling: longitudinal and cross-sectional. We predict the clinical diagnosis of cognitive impairment in Alzheimer's disease (CN, MCI, or AD).
 
-    - hola!
+    #figure(image("assets/lg-cs-meantop3-BCA.png"), caption: "Mean BCA for top 3 models in each category", gap: 1em)
   ],
 )
 
@@ -237,9 +237,92 @@
       )$]
   ],
   [
-    hello
+    - An example functional connectivity (FC) matrix using the AAL atlas (number of regions: 116):
+
+    #align(horizon)[
+      #figure(image("assets/fc-example.png"), caption: "Example FC matrix", gap: 1em)
+    ]
   ],
 )
+
+#slide[
+  #slide-title("The Dataset")
+  #v(slide-margin)
+  - *Stable sequence:* Last visit diagnosis same as previous
+
+  - *Converter sequence:* Last visit diagnosis different from previous (CN -> MCI or MCI -> AD)
+
+  #align(horizon)[
+    #grid(
+      columns: (1fr, 1fr),
+      gutter: slide-margin,
+      [
+        #figure(image("assets/data_classes.png"), caption: "Stable/converter subject distribution", gap: 1em)
+      ],
+      [
+        #figure(
+          image("assets/data_dist.png"),
+          caption: "Another view of stable/converter subject distribution",
+          gap: 1em,
+        )
+      ],
+    )]
+]
+
+#slide[
+  #slide-title("The Model")
+
+  #align(horizon)[
+    #figure(
+      image("assets/model_1row_block.png"),
+      caption: "Model architecture",
+      gap: 1em,
+    )
+  ]
+]
+
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("Input")], [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
+]
+
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("GraphSAGE", venue: "[NeurIPS 2017]")],
+    [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
+]
 
 #slide[
   #slide-title("GraphSAGE", venue: "[NeurIPS 2017]")
@@ -276,18 +359,103 @@
 ]
 
 #slide[
-  #slide-title[The Model]
-  #v(6pt)
-  Functional connectivity graphs across a subject's visits
-  #v(10pt)
-  #image("assets/model_1row_block.png", width: 100%, height: 180pt, fit: "contain")
-  #v(5pt)
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("GraphNorm", venue: "[ICML 2021]")],
+    [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
 ]
 
 #slide[
-  #slide-title[Testing]
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("Dropout", venue: "[JMLR 2014]")],
+    [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
 
-  - hello
-    - dawdh
-  - dawdj
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
 ]
+
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("TopK Pooling", venue: "[RRL@NeurIPS 2018]")],
+    [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
+]
+
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("Mean and Max Pooling")], [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      hello
+    ],
+    [
+      hello
+    ],
+  )
+]
+
+
+#slide[
+  #slide-title("Pretraining")
+  #v(slide-margin)
+  - Using 20% of the data
+]
+
+#slide[
+  #slide-title("Challenges")
+  #v(slide-margin)
+  - hello
+]
+
+#section-slide("Thank you!")
