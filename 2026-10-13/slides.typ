@@ -135,7 +135,7 @@
   #slide-title("What is fMRI?")
   #v(slide-margin)
   #grid(
-    columns: (30%, auto),
+    columns: (1fr, auto),
     gutter: slide-margin,
     [
       - Functional Magnetic Resonance Imaging is a type of brain scan that shows both the structure of the brain and, more importantly, *which areas are active during specific tasks or at rest*.
@@ -147,7 +147,13 @@
       - It's basically *a number of 3D images*.
     ],
     [
-      #figure(image("assets/fmri-example.png"), caption: "Example fMRI volume", gap: 1em)
+      #align(right)[
+        #figure(
+          image("assets/fmri-example.png", height: 70%),
+          caption: "Example fMRI volume",
+          gap: 1em,
+        )
+      ]
     ],
   )
 ]
@@ -156,7 +162,7 @@
   #slide-title("Preprocessing Steps using fMRIPrep")
   #v(slide-margin)
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
       1. *Convert the data into a standard format:*
@@ -192,11 +198,11 @@
   #slide-title("Generating Brain Functional Connectivity Network using NiLearn")
   #v(slide-margin)
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
       1. *Parcellation (applying an atlas):*
-        - Instead of analyzing 100,000 tiny individual voxels, Nilearn uses a brain "atlas" to group those voxels into larger, meaningful ROIs (e.g., the hippocampus, the amygdala, the motor cortex).
+        - Instead of analyzing 100,000 tiny individual voxels, Nilearn uses a brain "atlas" to group those voxels into larger, meaningful regions of interest (ROIs) (e.g., the hippocampus, the amygdala, the motor cortex).
         - $R = \{R_1, R_2, dots, R_N\}$: set of ROIs defined by the atlas
 
       2. *Extracting time series from each ROI (4D -> $|R| times T$):*
@@ -291,13 +297,24 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
-      hello
+      - The original 2D functional connectivity matrix is $N times N$, where $N$ is the number of ROIs.
+
+      - For the GNN input, that matrix is converted into a graph $G$:
+        - Nodes: $V$ = ROIs
+        - Edges: $E$ = functional connections between ROIs
+          - An edge exists only if the correlation between two nodes is $>=$ _threshold_. We set _threshold_=0.2.
+        - Node features: $X$ = connectivity profile of each ROI (its row of the FC matrix)
     ],
     [
-      hello
+      - The key difference is:
+        - The 2D matrix is a dense table of pairwise correlations.
+        - The GNN input is a graph object built from that matrix letting graph convolutions aggregate information over neighboring ROIs.
+
+      - The model input is multiple graphs for one subject, arranged as a visit sequence.
+        - $[G_1, G_2, dots, G_m],$ where $m$ is the number of visits.
     ],
   )
 ]
@@ -444,7 +461,6 @@
     ],
   )
 ]
-
 
 #slide[
   #slide-title("Pretraining")
