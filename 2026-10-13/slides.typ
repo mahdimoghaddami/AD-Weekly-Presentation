@@ -17,7 +17,7 @@
   config-page(width: 960pt, height: 540pt, margin: slide-margin, fill: cream),
 )
 
-#show: apply-theme.with(text-size: 14pt, math-size: 20pt)
+#show: apply-theme.with(text-size: 14pt, math-size: 19pt)
 
 #slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
@@ -147,7 +147,7 @@
       - It's basically *a number of 3D images*.
     ],
     [
-      #figure(image("assets/data_classes.png"), caption: "Example fMRI volume", gap: 1em)
+      #figure(image("assets/fmri-example.png"), caption: "Example fMRI volume", gap: 1em)
     ],
   )
 ]
@@ -159,12 +159,87 @@
     columns: (50%, auto),
     gutter: slide-margin,
     [
-      1. Convert the data into a standard format:
+      1. *Convert the data into a standard format:*
         - DICOM (.dcm) -> NIfTI (.nii)
+
+      2. *Motion correction:*
+        - During a several-minute fMRI scan, the subject inevitably moves a little.
+        - fMRIPrep estimates how each volume moved relative to a reference volume.
+        - It then realigns the volumes.
+
+      3. *Slice-timing correction:*
+        - An fMRI volume isn't actually acquired all at once.
+        - The scanner acquires different slices at slightly different times.
+        - Slice-timing correction estimates what the signal would have been at the appropriate timing.
     ],
-    [hello],
+    [
+      4. *Susceptibility distortion correction:*
+        - Magnetic fields get warped near air-filled spaces in the skull (like the sinuses).
+        - This step calculates that magnetic warping and "un-squishes" the image back to its true anatomical shape.
+
+      5. *Coregistration:*
+        - fMRI images are low-resolution and blurry.
+        - To know exactly where the brain activity is happening, fMRIPrep aligns the functional image with the subject's anatomical image (T1w MRI).
+
+      6. *Spatial normalization:*
+        - Every person's brain is a slightly different size and shape.
+        - fMRIPrep estimates a nonlinear transformation that maps the individual's anatomy to a standard brain template (usually called MNI space).
+    ],
   )
 ]
+
+#slide[
+  #slide-title("Generating Brain Functional Connectivity Network using NiLearn")
+  #v(slide-margin)
+  #grid(
+    columns: (50%, auto),
+    gutter: slide-margin,
+    [
+      1. *Parcellation (applying an atlas):*
+        - Instead of analyzing 100,000 tiny individual voxels, Nilearn uses a brain "atlas" to group those voxels into larger, meaningful ROIs (e.g., the hippocampus, the amygdala, the motor cortex).
+        - $R = \{R_1, R_2, dots, R_N\}$: set of ROIs defined by the atlas
+
+      2. *Extracting time series from each ROI (4D -> $|R| times T$):*
+        - Each voxel in an ROI has its own BOLD time series. We summarize these voxel signals, typically by taking the mean signal across voxels in the region.
+        - $R_1 = [x_1, x_2, dots, x_T]$ where $T$ is the number of time points.
+        - We do this for every region.
+    ],
+    [
+      3. *Correlation matrix ($|R| times T -> |R| times |R|$):*
+        - "How similarly does Region $i$'s activity fluctuate with Region $j$'s activity?"
+
+        - Suppose:
+          - $R_i = [0.2, 0.4, 0.1, -0.2, dots]$
+          - $R_j = [0.3, 0.5, 0.2, -0.1, dots]$
+
+        - We calculate the Pearson correlation:
+
+          $r_(i j) &= "corr"(R_i, R_j)\
+          &= (sum(R_i - mu_i)(R_j - mu_j))/(sqrt(sum(R_i - mu_i)^2) sqrt(sum(R_j - mu_j)^2))$
+
+        - $-1<=r_(i j)<=1$ for all $i, j in \{1, dots, N\}$
+    ],
+  )
+]
+
+#split-slide(
+  40%,
+  [
+    #slide-title("FC Matrix", color: cream)
+    #align(horizon + center)[
+      #set math.mat(delim: "[")
+      #show math.equation: set text(size: 1.56em)
+      $F C=mat(
+        r_11, r_12, ..., r_(1N);
+        r_21, r_22, ..., r_(2N);
+        dots.v, dots.v, dots.down, dots.v;
+        r_(N 1), r_(N 2), ..., r_(N N);
+      )$]
+  ],
+  [
+    hello
+  ],
+)
 
 #slide[
   #slide-title("GraphSAGE", venue: "[NeurIPS 2017]")
