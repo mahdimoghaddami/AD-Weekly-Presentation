@@ -491,10 +491,40 @@
     columns: (1fr, 1fr),
     gutter: slide-margin,
     [
-      hello
+      - Input:
+      $ H^("pool") = [h^("pool")_1, h^("pool")_2, dots, h^("pool")_K] in RR^(K times d) $
+
+      - Mean pooling averages the values across nodes:
+        $ h^("mean") = 1/K sum_(i=1)^K h^("pool")_i in RR^(1 times d) $
+
+      - Max pooling takes the maximum value across nodes, separately for each feature:
+        $ h^("max") = max_(i=1)^K h^("pool")_i in RR^(1 times d) $
     ],
     [
-      hello
+      - We concatenate the mean and max pooled representations to form the final graph representation:
+        $ g = [h^("mean"), h^("max")] in RR^(1 times 2d) $
+
+
+      Example:
+
+      #grid(
+        align: (center, center),
+        columns: (1fr, 1fr),
+        gutter: slide-margin,
+        [
+          #set math.mat(delim: "[")
+          $H^("pool")=mat(
+            1, 4, 2, 0;
+            3, 2, 5, 1;
+            2, 6, 2, 2;
+          ) ==>$
+        ],
+        [$h^("mean") = [2, 4, 3, 1],$
+          $h^("max") = [3, 6, 5, 2]$],
+      )
+
+      $ g = [2, 4, 3, 1, 3, 6, 5, 2] $
+
     ],
   )
 ]
