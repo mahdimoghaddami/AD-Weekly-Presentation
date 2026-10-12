@@ -229,12 +229,12 @@
 ]
 
 #split-slide(
-  40%,
+  50%,
   [
     #slide-title("FC Matrix", color: cream)
     #align(horizon + center)[
       #set math.mat(delim: "[")
-      #show math.equation: set text(size: 1.56em)
+      #show math.equation: set text(size: 2.05em)
       $F C=mat(
         r_11, r_12, ..., r_(1N);
         r_21, r_22, ..., r_(2N);
@@ -333,44 +333,33 @@
     columns: (50%, auto),
     gutter: slide-margin,
     [
-      hello
-    ],
-    [
-      hello
-    ],
-  )
-]
+      - For every node $i$:
 
-#slide[
-  #slide-title("GraphSAGE", venue: "[NeurIPS 2017]")
-  // #text(16pt, fill: olive, font: "Libertinus Serif")[[NeurIPS 2017]]
-  #v(10pt)
-  #grid(
-    columns: (1.65fr, 1fr),
-    gutter: 40pt,
-    [
-      *Connectivity profile of ROI $i$*
-      #text(24pt)[$ x_i = ["corr"(i, R_1), dots, "corr"(i, R_N)] $]
-      #v(10pt)
-      *Mean of neighboring node features*
-      #text(25pt)[$ m_i = 1 / abs(cal(N)(i)) sum_(j in cal(N)(i)) x_j $]
-      #v(10pt)
-      *Updated node embedding*
-      #text(25pt)[$ h_i = sigma(W_"self" x_i + W_"neigh" m_i + b) $]
+        $ x_i = ["corr"(i, R_1), "corr"(i, R_2), dots, "corr"(i, R_N)] $
+
+        - We aggregate neighbor features:
+
+          $ m_i = 1 / abs(cal(N)(i)) sum_(j in cal(N)(i)) x_j $
+
+        - Combine node features with neighbor features:
+
+          $ h_i = sigma(x_i W_"self"^T + m_i W_"neigh"^T + b) $
     ],
     [
-      #text(fill: olive, weight: "bold")[Notation]
-      #v(10pt)
-      #text(19pt)[
-        $cal(N)(i)$: neighbors of ROI $i$\
-        $W_"self", W_"neigh"$: learned weights\
-        $b$: learned bias\
-        $sigma$: activation function
-      ]
-      #v(12pt)
-      #text(fill: olive, weight: "bold")[Layer output]
-      #text(24pt)[$ H = mat(h_1^T; dots.v; h_N^T) in RR^(N times d) $]
-      #text(18pt)[$N$ nodes, $d$ embedding features]
+      - $h_i in RR^d$: updated node embedding for node $i$
+
+      - $sigma$: activation function
+
+      - $W_"self" in RR^(d times N)$: learned weight matrix for the node's own features
+
+      - $W_"neigh" in RR^(d times N)$: learned weight matrix for the aggregated neighbor features
+
+      - $b in RR^d$: learned bias
+
+      - We do this for all $N$ nodes.
+        - Input: $X = [x_1, x_2, dots, x_N] in RR^(N times N)$
+
+        - Output: $H = [h_1, h_2, dots, h_N] in RR^(N times d)$
     ],
   )
 ]
@@ -386,13 +375,30 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
-      hello
+      - Input: $H = [h_1, h_2, dots, h_N] in RR^(N times d)$
+
+      - GraphNorm normalizes the node embeddings within that one graph. In simple terms, it asks:
+        - Are some node features unusually large or small compared with the rest of the graph?
+
+      - Then it rescales them, so the graph is easier for the next layers to process.
+
+      - Each node is normalized:
+        $ hat(h)_i = (h_i - mu) / (sigma + epsilon) $
+
+        - $epsilon$ is a small constant to prevent division by zero.
     ],
     [
-      hello
+      $ mu = 1 / N sum_(i=1)^N h_i in RR^d $
+
+      $ sigma = sqrt(1 / N sum_(i=1)^N (h_i - mu)^2) in RR^d $
+
+      - GraphNorm also learns a small rescaling and shifting for each feature:
+        $ h'_i = gamma times hat(h)_i + beta $
+
+        - $gamma, beta in RR^d$: learned parameters
     ],
   )
 ]
@@ -408,13 +414,27 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
-      hello
+      - Input: $H' = [h'_1, h'_2, dots, h'_N] in RR^(N times d)$
+
+      - Dropout is regularization technique to prevent overfitting.
+
+      - During training, a random subset of neurons is deactivated.
+
+      - For each node $i$ and feature $k$, we have a mask:
+        $ m_(i,k) ~ "Bernoulli"(1-p), $
+        where $p$ is the dropout probability.
+
+        $ h''_(i,k) = (m_(i,k) dot h'_(i,k)) / (1-p) $
     ],
     [
-      hello
+      - Therefore:
+        $ H'' = (H' dot.o M) / (1-p) $
+
+      - Output:
+        $ H'' = [h''_1, h''_2, dots, h''_N] in RR^(N times d) $
     ],
   )
 ]
@@ -430,13 +450,30 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
-      hello
+      - Input: $H'' = [h''_1, h''_2, dots, h''_N] in RR^(N times d)$
+
+      - TopK pooling keeps only the "most important" nodes and removes the rest.
+
+      - The model learns a score for each node. Top $K$ highest-scoring nodes are kept; the rest are discarded.
+
+      - First, TopK pooling learns a projection vector $p in RR^d$:
+        $ s_i = (h''_i^T p) / (||p||) in RR $
+
+      - Nodes are ranked based on their scores, and the top $K$ nodes are selected.
     ],
     [
-      hello
+      - The model keeps only the top $K$ nodes:
+        $ K=[r N], $
+        where $r$ is the pooling ratio (we use $r=0.3$).
+
+      - For the kept nodes, TopK pooling also gates their embeddings using the score:
+        $ h^("pool")_i = h_i dot tanh(s_i) in RR^d $
+
+      - Output:
+        $ H^("pool") = [h^("pool")_1, h^("pool")_2, dots, h^("pool")_K] in RR^(K times d) $
     ],
   )
 ]
@@ -451,7 +488,7 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
       hello
