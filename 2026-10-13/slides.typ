@@ -110,7 +110,7 @@
 
 #split-slide(
   40%,
-  [#slide-title([Longitudinal\ vs.\ Cross-Sectional], color: cream)
+  [#slide-title([AD Progression Prediction using DTI], color: cream)
     #align(bottom)[
       - The question:
         - Will a subject progress to a further stage of AD (CN -> MCI or MCI -> AD) in the next visit?
