@@ -153,7 +153,7 @@
     columns: (1fr, auto),
     gutter: slide-margin,
     [
-      - Functional Magnetic Resonance Imaging is a type of brain scan that shows both the structure of the brain and, more importantly, *which areas are active during specific tasks or at rest*.
+      - Functional Magnetic Resonance Imaging is 4D and low-resolution brain scan that shows *which areas are active during specific tasks or at rest*.
 
       - It's acquired by tracking blood flow changes. When a brain area is more active, it uses more oxygen, and fMRI can detect that via something called the *BOLD signal* (Blood Oxygen Level Dependent signal).
 
@@ -323,7 +323,7 @@
       - For the GNN input, that matrix is converted into a graph $G$:
         - Nodes: $V$ = ROIs
         - Edges: $E$ = functional connections between ROIs
-          - An edge exists only if the correlation between two nodes is $>=$ _threshold_. We set _threshold_=0.2.
+          - An edge exists only if the size of correlation between two nodes, $|r|>=$ _threshold_. We set _threshold_=0.2.
         - Node features: $X$ = connectivity profile of each ROI (its row of the FC matrix)
     ],
     [
@@ -404,14 +404,14 @@
       - Then it rescales them, so the graph is easier for the next layers to process.
 
       - Each node is normalized:
-        $ hat(h)_i = (h_i - mu) / (sigma + epsilon) $
+        $ hat(h)_i = (h_i - mu) / (sqrt(sigma^2 + epsilon)) $
 
         - $epsilon$ is a small constant to prevent division by zero.
     ],
     [
       $ mu = 1 / N sum_(i=1)^N h_i in RR^(1 times d) $
 
-      $ sigma = sqrt(1 / N sum_(i=1)^N (h_i - mu)^2) in RR^(1 times d) $
+      $ sigma^2 = 1 / N sum_(i=1)^N (h_i - mu)^2 in RR^(1 times d) $
 
       - GraphNorm also learns a small rescaling and shifting for each feature:
         $ h'_i = gamma dot.o hat(h)_i + beta $
@@ -461,7 +461,7 @@
   #grid(
     columns: (auto, 1fr),
     gutter: slide-margin,
-    [#slide-title("TopK Pooling", venue: "[RRL@NeurIPS 2018]")],
+    [#slide-title("TopK Pooling", venue: "[R2L@NeurIPS 2018]")],
     [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
   )
 
@@ -477,7 +477,9 @@
 
       - The model learns a score for each node. Top $K$ highest-scoring nodes are kept; the rest are discarded.
 
-      - First, TopK pooling learns a projection vector $p in RR^d$:
+      - First, TopK pooling learns a projection vector $p in RR^d$.
+
+      - Then, it computes a score for each node:
         $ s_i = (h''_i^T p) / (||p||) in RR $
 
       - Nodes are ranked based on their scores, and the top $K$ nodes are selected.
@@ -487,8 +489,10 @@
         $ K=[r N], $
         where $r$ is the pooling ratio (we use $r=0.3$).
 
-      - For the kept nodes, TopK pooling also gates their embeddings using the score:
-        $ h^("pool")_i = h_i dot tanh(s_i) in RR^d $
+      - Edges to discarded nodes are removed.
+
+      - For the kept nodes, TopK pooling gates their embeddings using the score to make the operation differentiable:
+        $ h^("pool")_i = h''_i dot tanh(s_i) in RR^(1 times d) $
 
       - Output:
         $ H^("pool") = [h^("pool")_1, h^("pool")_2, dots, h^("pool")_K] in RR^(K times d) $
@@ -519,31 +523,94 @@
         $ h^("max") = max_(i=1)^K h^("pool")_i in RR^(1 times d) $
     ],
     [
-      - We concatenate the mean and max pooled representations to form the final graph representation:
-        $ g = [h^("mean"), h^("max")] in RR^(1 times 2d) $
-
-
       Example:
 
-      #grid(
-        align: (center, center),
-        columns: (1fr, 1fr),
-        gutter: slide-margin,
-        [
-          #set math.mat(delim: "[")
-          $H^("pool")=mat(
-            1, 4, 2, 0;
-            3, 2, 5, 1;
-            2, 6, 2, 2;
-          ) ==>$
-        ],
-        [$h^("mean") = [2, 4, 3, 1],$
+      #set math.mat(delim: "[")
+      $
+        H^("pool")=mat(
+          1, 4, 2, 0;
+          3, 2, 5, 1;
+          2, 6, 2, 2;
+        )
+      $
 
-          $h^("max") = [3, 6, 5, 2]$],
-      )
+      $ h^("mean") = [2, 4, 3, 1] $
 
-      $ g = [2, 4, 3, 1, 3, 6, 5, 2] $
+      $ h^("max") = [3, 6, 5, 2] $
+    ],
+  )
+]
 
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("Visit Distances")], [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: slide-margin,
+    [
+      - Input:
+        $ Delta in RR, $
+        showing the number of months until the next visit in the sequence.
+
+      - We apply logarithmic normalization:
+        $ tau = log(1 + Delta/12) $
+
+      - A small neural network turns that scalar into a 32-feature time embedding:
+        $ a = "Dropout"("ReLU"(tau W^T_1 + b_1)) in RR^(1 times 16) $
+        $ e_"time" = a W^T_2 + b_2 in RR^(1 times 32) $
+
+    ],
+    [
+      - We concatenate the time embedding with the graph representation:
+        $ u = [h^("mean"), e_"time", h^("max")] in RR^(1 times (2d+32)) $
+
+      - A second learned layer mixes the graph and time information and projects it back to $2d$ features:
+        $ g = "Dropout"("ReLU"(tau W^T + b)) in RR^(1 times 2d) $
+
+    ],
+  )
+]
+
+#slide[
+  #grid(
+    columns: (auto, 1fr),
+    gutter: slide-margin,
+    [#slide-title("Bidirectional LSTM")], [#align(right)[#image("assets/model_1row_block.png", height: 30%)]],
+  )
+
+  #v(slide-margin)
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: slide-margin,
+    [
+      - Input:
+        $ G = [g_1, g_2, dots, g_v] in RR^(v times 2d), $
+        where $v$ is the number of visits.
+
+      - The LSTM processes each embedding while maintaining a hidden state $(h_t)$ and a memory state $(c_t)$.
+
+      - the operations at visit $t$ are:
+        $ i_t = "sigmoid"(g_t W^T_i + h_(t-1) U^T_i + b_i) $
+        $ f_t = "sigmoid"(g_t W^T_f + h_(t-1) U^T_f + b_f) $
+        $ o_t = "sigmoid"(g_t W^T_o + h_(t-1) U^T_o + b_o) $
+    ],
+    [
+      $ c'_t = tanh(g_t W^T_c + h_(t-1) U^T_c + b_c) $
+      - The memory and hidden state are updated:
+        $ c_t = f_t dot.o c_(t-1) + i_t dot.o c'_t $
+        $ h_t = o_t dot.o tanh(c_t) $
+
+      - Because the LSTM is bidirectional, one direction processes $(g_1 -> g_2 -> dots -> g_v)$, while the other processes $(g_v -> dots -> g_2 -> g_1)$. Each has its own learned weights.
+
+      - We concatenate the final hidden states from both directions to form the final visit sequence representation:
+        $ h = [h_v, h_1] in RR^(1 times 2d) $
     ],
   )
 ]
@@ -556,7 +623,7 @@
     #align(horizon)[
       #figure(
         image("assets/pretraining.png"),
-        caption: "Model architecture",
+        caption: "We pretrain the Graph convolution blocks.",
         gap: 1em,
       )
     ]
@@ -567,6 +634,11 @@
   #v(slide-margin)
   - Missing visits:
     - Some visits are missing fMRI but have data for other modalities (sMRI, cognitive scores, PET, etc.)
+
+  - Small dataset:
+    - We have only 303 subjects with fMRI data, and only 53 of them (17.5%) are converters.
 ]
+
+
 
 #section-slide("Thank you!")
