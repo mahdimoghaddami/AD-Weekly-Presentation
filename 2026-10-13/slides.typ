@@ -17,12 +17,12 @@
   config-page(width: 960pt, height: 540pt, margin: (bottom: slide-margin, rest: slide-margin), fill: cream),
 )
 
-#show: apply-theme.with(text-size: 14pt, math-size: 19pt)
+#show: apply-theme.with()
 
 #slide(config: config-page(fill: olive, footer: none))[
   #set text(fill: cream)
   #set par(leading: 0.4em)
-  #align(right)[#text(10pt)[#datetime.today().display("[month repr:long] [day], [year]")]]
+  #align(right)[#text(page-number-size)[#datetime.today().display("[month repr:long] [day], [year]")]]
   #align(horizon)[#grid(
     columns: (1fr, 1fr),
     [#text(font: "Libertinus Serif", size: 85pt)[Alzheimer's\ Disease\ Research]],
@@ -63,7 +63,22 @@
   [
     - This study compares two categories of modeling: longitudinal and cross-sectional. We predict the clinical diagnosis of cognitive impairment in Alzheimer's disease (CN, MCI, or AD).
 
-    #figure(image("assets/lg-cs-meantop3-BCA.png"), caption: "Mean BCA for top 3 models in each category", gap: 1em)
+    #align(horizon)[
+      #figure(
+        grid(
+          columns: (1fr, 1fr),
+          align: bottom,
+          gutter: 1em,
+          [
+            #image("assets/lg-cs-bca-mean.png", width: 100%, height: 200pt, fit: "contain")
+          ],
+          [
+            #image("assets/lg-cs-data-dist.png", width: 100%)
+          ],
+        ),
+        caption: "a) Mean BCA for top 3 models in each category, b) Data distribution based on the number of visits.",
+        gap: 1em,
+      )]
   ],
 )
 
@@ -101,7 +116,7 @@
         - SCImage Journal Rank (SJR)
         - Source Normalized Impact per Paper (SNIP)
       - Conference papers:
-        - Core Ranking (A, A, B, C)
+        - Core Ranking (A\*, A, B, C)
         - CCF Ranking (A, B, C)
       - Both:
         - Google Scholar h5-index
@@ -113,7 +128,7 @@
   [#slide-title([AD Progression Prediction using DTI], color: cream)
     #align(bottom)[
       - The question:
-        - Will a subject progress to a further stage of AD (CN -> MCI or MCI -> AD) in the next visit?
+        - Will a subject progress to a further stage of AD (CN #sym.arrow.r MCI or MCI #sym.arrow.r AD) in the next visit?
 
       - Binary Stable/Converter prediction.
     ]
@@ -159,14 +174,14 @@
 ]
 
 #slide[
-  #slide-title("Preprocessing Steps using fMRIPrep")
+  #slide-title("Preprocessing Steps using fMRIPrep", venue: "[Nature Methods 2019]")
   #v(slide-margin)
   #grid(
     columns: (1fr, 1fr),
     gutter: slide-margin,
     [
       1. *Convert the data into a standard format:*
-        - DICOM (.dcm) -> NIfTI (.nii)
+        - DICOM (`.dcm`) #sym.arrow.r NIfTI (`.nii`)
 
       2. *Motion correction:*
         - During a several-minute fMRI scan, the subject inevitably moves a little.
@@ -203,11 +218,12 @@
     [
       1. *Parcellation (applying an atlas):*
         - Instead of analyzing 100,000 tiny individual voxels, Nilearn uses a brain "atlas" to group those voxels into larger, meaningful regions of interest (ROIs) (e.g., the hippocampus, the amygdala, the motor cortex).
-        - $R = \{R_1, R_2, dots, R_N\}$: set of ROIs defined by the atlas
+        $ R = \{R_1, R_2, dots, R_N\}, $ set of ROIs defined by the atlas
 
       2. *Extracting time series from each ROI (4D -> $|R| times T$):*
         - Each voxel in an ROI has its own BOLD time series. We summarize these voxel signals, typically by taking the mean signal across voxels in the region.
-        - $R_1 = [x_1, x_2, dots, x_T]$ where $T$ is the number of time points.
+        $ R_1 = [x_1, x_2, dots, x_T], $ where $T$ is the number of time points.
+
         - We do this for every region.
     ],
     [
@@ -215,13 +231,14 @@
         - "How similarly does Region $i$'s activity fluctuate with Region $j$'s activity?"
 
         - Suppose:
-          - $R_i = [0.2, 0.4, 0.1, -0.2, dots]$
-          - $R_j = [0.3, 0.5, 0.2, -0.1, dots]$
+          $ R_i = [0.2, 0.4, 0.1, -0.2, dots] $
+          $ R_j = [0.3, 0.5, 0.2, -0.1, dots] $
 
         - We calculate the Pearson correlation:
 
-          $r_(i j) &= "corr"(R_i, R_j)\
-          &= (sum(R_i - mu_i)(R_j - mu_j))/(sqrt(sum(R_i - mu_i)^2) sqrt(sum(R_j - mu_j)^2))$
+          $
+            r_(i j) & = "corr"(R_i, R_j) & = (sum(R_i - mu_i)(R_j - mu_j))/(sqrt(sum(R_i - mu_i)^2) sqrt(sum(R_j - mu_j)^2))
+          $
 
         - $-1<=r_(i j)<=1$ for all $i, j in \{1, dots, N\}$
     ],
@@ -240,7 +257,8 @@
         r_21, r_22, ..., r_(2N);
         dots.v, dots.v, dots.down, dots.v;
         r_(N 1), r_(N 2), ..., r_(N N);
-      )$]
+      )$
+    ]
   ],
   [
     - An example functional connectivity (FC) matrix using the AAL atlas (number of regions: 116):
@@ -256,7 +274,7 @@
   #v(slide-margin)
   - *Stable sequence:* Last visit diagnosis same as previous
 
-  - *Converter sequence:* Last visit diagnosis different from previous (CN -> MCI or MCI -> AD)
+  - *Converter sequence:* Last visit diagnosis different from previous (CN #sym.arrow.r MCI or MCI #sym.arrow.r AD)
 
   #align(horizon)[
     #grid(
@@ -330,7 +348,7 @@
   #v(slide-margin)
 
   #grid(
-    columns: (50%, auto),
+    columns: (1fr, 1fr),
     gutter: slide-margin,
     [
       - For every node $i$:
@@ -346,7 +364,7 @@
           $ h_i = sigma(x_i W_"self"^T + m_i W_"neigh"^T + b) $
     ],
     [
-      - $h_i in RR^d$: updated node embedding for node $i$
+      - $h_i in RR^(1 times d)$: updated node embedding for node $i$
 
       - $sigma$: activation function
 
@@ -354,7 +372,7 @@
 
       - $W_"neigh" in RR^(d times N)$: learned weight matrix for the aggregated neighbor features
 
-      - $b in RR^d$: learned bias
+      - $b in RR^(1 times d)$: learned bias
 
       - We do this for all $N$ nodes.
         - Input: $X = [x_1, x_2, dots, x_N] in RR^(N times N)$
@@ -396,9 +414,9 @@
       $ sigma = sqrt(1 / N sum_(i=1)^N (h_i - mu)^2) in RR^d $
 
       - GraphNorm also learns a small rescaling and shifting for each feature:
-        $ h'_i = gamma times hat(h)_i + beta $
+        $ h'_i = gamma dot.o hat(h)_i + beta $
 
-        - $gamma, beta in RR^d$: learned parameters
+        - $gamma, beta in RR^(1 times d)$: learned parameters
     ],
   )
 ]
@@ -520,6 +538,7 @@
           ) ==>$
         ],
         [$h^("mean") = [2, 4, 3, 1],$
+
           $h^("max") = [3, 6, 5, 2]$],
       )
 
@@ -533,12 +552,21 @@
   #slide-title("Pretraining")
   #v(slide-margin)
   - Using 20% of the data
+
+    #align(horizon)[
+      #figure(
+        image("assets/pretraining.png"),
+        caption: "Model architecture",
+        gap: 1em,
+      )
+    ]
 ]
 
 #slide[
   #slide-title("Challenges")
   #v(slide-margin)
-  - hello
+  - Missing visits:
+    - Some visits are missing fMRI but have data for other modalities (sMRI, cognitive scores, PET, etc.)
 ]
 
 #section-slide("Thank you!")

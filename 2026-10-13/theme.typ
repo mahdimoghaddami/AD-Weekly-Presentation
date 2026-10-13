@@ -6,14 +6,18 @@
 #let orange = rgb("b05024")
 #let ink = rgb("#000000")
 #let ink2 = rgb("25291d")
-#let slide-margin = 36pt
+#let slide-margin = 32pt
 #let page-number-size = 8pt
 #let page-number-fill = orange
 #let heading-font = "Libertinus Serif"
-#let body-font = "Inter"
-#let body-font-size = 14pt
+#let body-font = "Libertinus Sans"
+#let body-font-size = 15pt
 #let math-font = "New Computer Modern Math"
-#let math-font-size = 20pt
+#let math-font-size = 16pt
+#let mono-font = "Libertinus Mono"
+#let mono-font-size = 14pt
+#let title-font-size = 32pt
+#let section-font-size = 72pt
 
 #let apply-theme(entire-document, text-size: body-font-size, math-size: math-font-size) = {
   set text(font: body-font, size: text-size, fill: ink)
@@ -21,18 +25,18 @@
   entire-document
 }
 
-#let slide-title(title-string, color: olive, font-size: 38pt, venue: none) = {
+#let slide-title(title-string, color: olive, font-size: title-font-size, venue: none) = {
   // text(font: "Libertinus Serif", size: 38pt, fill: olive, title-string)
   heading(level: 2)[#text(font: heading-font, weight: "bold", size: font-size, fill: color, title-string) #text(
       font: heading-font,
       weight: "regular",
-      size: 16pt,
+      size: body-font-size,
       fill: color,
       venue,
     )]
 }
 
-#let section-slide(section-title-string, color: cream, font-size: 72pt) = {
+#let section-slide(section-title-string, color: cream, font-size: section-font-size) = {
   set par(leading: 0.4em)
   slide(config: config-page(fill: orange, footer: none))[#align(horizon, heading()[#text(
     font: heading-font,
