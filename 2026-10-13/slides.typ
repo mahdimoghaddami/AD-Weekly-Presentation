@@ -76,7 +76,7 @@
             #image("assets/lg-cs-data-dist.png", width: 100%)
           ],
         ),
-        caption: "a) Mean BCA for top 3 models in each category, b) Data distribution based on the number of visits.",
+        caption: "a) Mean BCA for top 3 models in each category, b) Data distribution based on the number of visits",
         gap: 1em,
       )]
   ],
@@ -220,14 +220,14 @@
         - Instead of analyzing 100,000 tiny individual voxels, Nilearn uses a brain "atlas" to group those voxels into larger, meaningful regions of interest (ROIs) (e.g., the hippocampus, the amygdala, the motor cortex).
         $ R = \{R_1, R_2, dots, R_N\}, $ set of ROIs defined by the atlas
 
-      2. *Extracting time series from each ROI (4D -> $|R| times T$):*
+      2. *Extracting time series from each ROI (4D -> $N times T$):*
         - Each voxel in an ROI has its own BOLD time series. We summarize these voxel signals, typically by taking the mean signal across voxels in the region.
         $ R_1 = [x_1, x_2, dots, x_T], $ where $T$ is the number of time points.
 
         - We do this for every region.
     ],
     [
-      3. *Correlation matrix ($|R| times T -> |R| times |R|$):*
+      3. *Correlation matrix ($N times T -> N times N$):*
         - "How similarly does Region $i$'s activity fluctuate with Region $j$'s activity?"
 
         - Suppose:
@@ -409,9 +409,9 @@
         - $epsilon$ is a small constant to prevent division by zero.
     ],
     [
-      $ mu = 1 / N sum_(i=1)^N h_i in RR^d $
+      $ mu = 1 / N sum_(i=1)^N h_i in RR^(1 times d) $
 
-      $ sigma = sqrt(1 / N sum_(i=1)^N (h_i - mu)^2) in RR^d $
+      $ sigma = sqrt(1 / N sum_(i=1)^N (h_i - mu)^2) in RR^(1 times d) $
 
       - GraphNorm also learns a small rescaling and shifting for each feature:
         $ h'_i = gamma dot.o hat(h)_i + beta $
