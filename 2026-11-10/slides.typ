@@ -100,15 +100,66 @@
 #section-slide("Broken Scans")
 
 #split-slide(
-  40%,
+  35%,
   [
     #slide-title("Missing Slices", color: cream)
     #align(bottom)[
-      - Running fMRIPrep on my PC was slow and inefficient due to limited resources.
+      - 35 failed fMRI scans (`9` GE + `26` Philips):
+        - Failed `dcm2niix` with return code `1` due to either an erroneous per-slice GE private tag `(0019,10A2)` (`Raw data run number`), isolated single-slice PACS transfer dropouts, or truncated series uploads.
+
+      - I salvaged 24/35 scans.
     ]
   ],
   [
-    - hello
+    1. `GE Private Tag (0019,10A2) Bug` (5 scans, Salvageable $arrow.r$ 200 vols):
+      - Site `007` GE Signa HDxt scans (`I680900`, `I638776`, `I631785`, `I695057`, `I680924`) have **all 9,600 files (`48 slices × 200 volumes = 100.0%`), but GE private tag `(0019,10A2)` was incremented per slice (`48` unique values instead of `1`), confusing `dcm2niix`'s volume indexer.
+
+    2. Full-Brain (48 Slices) with 1-9 Isolated Single-Slice Dropouts (13 scans: 11 Philips + 2 GE, Salvageable $arrow.r$ 197-200 vols):
+      - Temporal linear interpolation of the `1–9` missing single slices from immediate neighbors `(t-1, t+1)`.
+
+    3. Full-Brain (48 Slices) Truncated at End (4 scans: 2 GE + 2 Philips, Salvageable $arrow.r$ 98-167 vols):
+      - Staging only the contiguous complete volumes `[Best_Start...Best_End]` recovers clean 48-slice 4D volumes with zero interpolation.
+
+    4. Near-Complete Axial Slab (2 Philips scans, Salvageable $arrow.r$ 132-200 vols):
+      - Philips exports 2D-slice fMRI in *slice-major order* (all timepoints of slice 1, then slice 2, etc.).
+
+    - The remaining 11 scans were unrecoverable:
+      - `10` Philips scans were truncated in slice-major order with only `1` to `41` axial slices present (`1.9%–85.4%` of files, missing `23 mm` to `155 mm` of brain tissue) or massive random dropouts (`I659915`, only 2 contiguous volumes), and `1` scan (`006_S_6500 I1028502`) is missing two internal slices inside the cortex (`Z = 70.40 mm` to `80.57 mm`, a `10.17 mm` internal spatial gap).
+  ],
+)
+
+#split-slide(
+  35%,
+  [
+    #slide-title("Temporal Interpolation", color: cream)
+    #align(bottom)[
+      - What is temporal interpolation in our context?
+
+      - Why temporal interpolation instead of spatial interpolation?
+    ]
+  ],
+  [
+    - In rs-fMRI, adjacent axial slices ($z-1$ and $z+1$) are $3.3 "mm"$ apart and pass through different anatomical structures (e.g., gray matter vs. CSF/ventricle), so averaging spatially blurs anatomy.
+
+    - By contrast, the *exact same slice location $z$* at volume $t-1$ ($3 "s"$ earlier) and volume $t+1$ ($3 "s"$ later) images the *exact same brain tissue*, and the BOLD hemodynamic response varies slowly over a $~6-10 "s"$ timescale (`< 0.1 Hz`).
+
+    1. *Locate the Missing `(z, t)` Slot:*
+      - Every DICOM file in the series is mapped by its axial coordinate `z = round("ImagePositionPatient"[2], 2)` (48 unique positions) and its volume index $t = "TemporalPositionIdentifier" (1 dots.c N)$.
+      - If slot `(z, t)` is missing, we find the closest existing volume before it
+        ($t_"prev"$, usually $t - 1$) and after it
+        ($t_"next"$, usually $t + 1$) *at that exact same slice coordinate $z$*.
+
+    2. *Compute the missing slice (2D Matrix):*
+      $
+        I(x, y, z, t) =
+        floor(
+          frac(
+            I(x, y, z, t_"prev") +
+            I(x, y, z, t_"next"),
+            2
+          )
+        )
+      $
   ],
 )
 
