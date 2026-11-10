@@ -635,7 +635,7 @@
   - Missing visits:
     - Some visits are missing fMRI but have data for other modalities (sMRI, cognitive scores, PET, etc.)
 
-  - Small dataset:
+  - Limited dataset:
     - We have only 303 subjects with fMRI data, and only 53 of them (17.5%) are converters.
 ]
 
