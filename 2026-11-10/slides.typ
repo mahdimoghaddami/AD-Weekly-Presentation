@@ -210,6 +210,68 @@
 
 #section-slide("Running fMRIPrep")
 
+#section-slide("Registration Strategy")
+
+#split-slide(
+  40%,
+  [#slide-title([Same-Day T1w], color: cream)
+    #align(bottom)[
+      - fMRI is blurry and low-resolution, so fMRIPrep uses a sharp T1w image as an anatomical map.
+
+      - By default, fMRIPrep can average all of a patient's T1w scans across years into one map.
+
+      - For ADNI longitudinal modeling, use the T1w scan acquired on the same day as each fMRI.
+    ]
+  ],
+  [
+    - *Tracks real brain atrophy:* A 2022 fMRI aligned to an averaged 2012–2022 T1w map can place signals in CSF where brain tissue used to be. Same-day T1w matches the brain's exact shape at that visit.
+
+    - *Prevents future-visit leakage:* Averaging future scans leaks later structural shrinkage into baseline data. Same-day T1w keeps each visit causal and independent.
+
+    - *Matches scanner geometry:* The same-day T1w shares that day's scanner, magnetic-field distortions, and head-coil position.
+  ],
+)
+
+#split-slide(
+  40%,
+  [#slide-title([Why Run `recon-all`?], color: cream)
+    #align(bottom)[
+      - `recon-all` traces the folded cortical surface and the gray-matter/white-matter boundary instead of treating the brain as cubes.
+
+      - This enables Boundary-Based Registration (`bbregister`) and produces anatomical maps useful for later modeling.
+    ]
+  ],
+  [
+    - *Sharper fMRI-to-T1w alignment:* `bbregister` locks fMRI to cortical folds, improving on whole-brain brightness matching (`FSL FLIRT`), especially with atrophy, enlarged ventricles, or sinus dropout.
+
+    - *Cleaner CompCor:* More precise white-matter and CSF maps reduce the risk of removing real gray-matter activity as physiological noise.
+
+    - *Automated QC:* The Euler number summarizes holes or defects in the reconstructed surface and helps flag poor T1w scans.
+
+    - *Bonus features:* Cortical thickness and regional gray-matter volume can become GNN node features.
+  ],
+)
+
+#split-slide(
+  40%,
+  [#slide-title([Quality vs. Runtime], color: cream)
+    #align(bottom)[
+      - Same-day T1w is strictly preferable for longitudinal Alzheimer's modeling and only requires each session to run as its own job.
+
+      - `recon-all` improves alignment, denoising, QC, and future structural features, but costs substantially more CPU time.
+    ]
+  ],
+  [
+    - *With `recon-all`:* approximately `3.5` hours per session.
+
+    - *With `--fs-no-reconall`:* approximately `30` minutes per session; suitable when only a fast volumetric MNI parcellation is needed.
+
+    - Matilda's `1,840` CPU cores make the higher-quality route feasible in under a week of wall-clock time.
+
+    - *Proposed Matilda run:* same-day T1w + full `recon-all`, unless the priority is a fast first-pass result under 24 hours.
+  ],
+)
+
 
 #split-slide(
   40%,
